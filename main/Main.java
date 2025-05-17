@@ -16,6 +16,7 @@ public class Main {
             logInSuccess = initialLogIn(scanner, accNum, pinNum);
             if (logInSuccess) {
                 displayMainMenu(scanner, accNum, pinNum, balance, transactions, bankIsOpen);
+                bankIsOpen = false;     // one sessions per login.
             }
             else {
                 bankIsOpen = false;
@@ -34,27 +35,24 @@ public class Main {
         while (numOfAttempts < 3) {
             System.out.println("Enter Account Number: ");
             enteredAccNum = scanner.nextInt();
+
             System.out.println("Enter PIN (Six Digits): ");
             enteredPinNum = scanner.nextInt();
 
             if (enteredAccNum == accNum && enteredPinNum == pinNum) {
-                System.out.printf("Welcome, %d!\n", accNum);
+                System.out.printf("Welcome, %d!\n\n", accNum);
                 return true;
             }
             else {
                 numOfAttempts++;
                 if (numOfAttempts < 3) {
-                    System.out.println("Sorry, the account number and PIN did not match.");
-                    System.out.println("Please try again.");
-                }
-                else {
-                    System.out.println("Failed logins have reached three attempts.");
-                    System.out.println("The transaction will be terminated!");
-                    return false;
+                    System.out.println("Incorrect account number or PIN. Please try again.\n");
                 }
             }
         }
 
+        System.out.println("Failed logins reached three attempts.");
+        System.out.println("The transaction will be terminated!\n");
         return false;
     }
 
@@ -63,7 +61,8 @@ public class Main {
                     double balance, String[][] transactions, boolean bankIsOpen) {
         int enteredChoice = -1;
 
-        while (bankIsOpen && enteredChoice != 0) {
+        do {
+            System.out.println("====== MAIN MENU ======");
             System.out.println("[1] - Change PIN");
             System.out.println("[2] - Balance Inquiry");
             System.out.println("[3] - Deposit");
@@ -83,7 +82,7 @@ public class Main {
                 case 0 -> bankIsOpen = false;
                 default -> System.out.println("Invalid option.\n");
             }
-        }
+        } while (bankIsOpen && enteredChoice != 0);
     }
 
 

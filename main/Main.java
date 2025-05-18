@@ -5,10 +5,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         String[][] transactions = new String[4][100];
 
-        int accNum = 12410314;
-        int[] pinNum = {123456};
-        double balance = 1000;
-
+        Account account = new Account(12410314, 123456, 1000);
         boolean bankIsOpen = true;
         boolean reLogInRequired = true;
 
@@ -16,11 +13,11 @@ public class Main {
             boolean logInSuccess = true;
             
             if (reLogInRequired) {
-                logInSuccess = initialLogIn(scanner, accNum, pinNum[0]);
+                logInSuccess = initialLogIn(scanner, account);
             }
 
             if (logInSuccess) {
-                reLogInRequired = displayMainMenu(scanner, accNum, pinNum, balance, transactions);
+                reLogInRequired = displayMainMenu(scanner, account, transactions);
             }
             else {
                 bankIsOpen = false;
@@ -31,7 +28,7 @@ public class Main {
     }
 
 
-    public static boolean initialLogIn(Scanner scanner, int accNum, int pinNum) {
+    public static boolean initialLogIn(Scanner scanner, Account account) {
         int enteredAccNum;
         int enteredPinNum;
         int numOfLoginAttempts = 0;
@@ -43,8 +40,8 @@ public class Main {
             System.out.print("Enter PIN (Six Digits): ");
             enteredPinNum = scanner.nextInt();
 
-            if (enteredAccNum == accNum && enteredPinNum == pinNum) {
-                System.out.printf("Welcome, %d!\n\n", accNum);
+            if (enteredAccNum == account.getAccNum() && enteredPinNum == account.getPinNum()) {
+                System.out.printf("Welcome, %d!\n\n", account.getAccNum());
                 return true;
             }
             else {
@@ -61,11 +58,10 @@ public class Main {
     }
 
 
-    public static boolean displayMainMenu(Scanner scanner, int accNum, int[] pinNum, 
-                                        double balance, String[][] transactions) {
+    public static Boolean displayMainMenu(Scanner scanner, Account account, String[][] transactions) {
         int enteredChoice = -1;
 
-        while (true) {
+        while (enteredChoice != 0) {
             System.out.println("\n====== MAIN MENU ======");
             System.out.println("[1] - Change PIN");
             System.out.println("[2] - Balance Inquiry");
@@ -79,65 +75,65 @@ public class Main {
 
             switch (enteredChoice) {
                 case 1 -> {
-                    int result = changePin(scanner, pinNum);
-                    if (result == -1) {
-                        return false;
+                    boolean result = changePin(scanner, account);
+                    if (!result) {
+                        return true;    // asks the user to login again.
                     }
-                    return true;
+                    return false;
                 }
-                case 2 -> balanceInquiry(accNum, balance);
-                case 3 -> deposit(scanner, balance, transactions);
-                case 4 -> withdraw(scanner, balance, transactions);
+                case 2 -> balanceInquiry(account);
+                case 3 -> deposit(scanner, account, transactions);
+                case 4 -> withdraw(scanner, account, transactions);
                 // case 5 -> viewTransactions(transactions);
                 case 0 -> {
                     System.out.println("Logging out...");
-                    return false;
+                    System.exit(0);
                 }
                 default -> System.out.println("Invalid option.\n");
             }
         }
+
+        return false;
     }
 
 
-    public static int changePin(Scanner scanner, int[] pinNum) {
-        int enteredOldPin;
-        int enteredNewPin;
-        int confirmedPin;
+    public static boolean changePin(Scanner scanner, Account account) {
+        int oldPin, newPin, confirmPin;
         int numOfPinAttempts = 0;
 
         while (numOfPinAttempts < 3) {
             System.out.print("\n\nEnter current PIN (Six Digits [100000 - 999999]): ");
-            enteredOldPin = scanner.nextInt();
+            oldPin = scanner.nextInt();
 
-            if (enteredOldPin != pinNum[0]) {
+            if (oldPin != account.getPinNum()) {
                 System.out.println("Invalid Pin. Entered PIN does not match with current PIN.");
                 numOfPinAttempts++;  
                 continue;     
             }
             
             System.out.print("Enter new PIN (Six Digits [100000 - 999999]): ");
-            enteredNewPin = scanner.nextInt();
+            newPin = scanner.nextInt();
 
-            if (enteredNewPin < 100000 || enteredNewPin > 999999) {
+            if (newPin < 100000 || newPin > 999999) {
                 System.out.println("Invalid PIN. New PIN must be a six-digit number.");
                 numOfPinAttempts++;
                 continue;
             }
 
-            if (enteredNewPin == pinNum[0]) {
+            if (newPin == account.getPinNum()) {
                 System.out.println("Invalid PIN. The PIN can't be the same as the previous one.");
                 numOfPinAttempts++;       
                 continue;    
             }
 
             System.out.print("Confirm new PIN: ");
-            confirmedPin = scanner.nextInt();
+            confirmPin = scanner.nextInt();
 
-            if (enteredNewPin == confirmedPin) {
-                pinNum[0] = enteredNewPin;       
+            if (newPin == confirmPin) {
+                account.setPinNum(newPin);     
                 System.out.println("PIN changed successfully. Please re-login.\n\n");
                 numOfPinAttempts = 0; 
-                return pinNum[0];                 
+                return false;                 
             }
             else {
                 System.out.println("PIN do not match. Please try again.");  
@@ -146,19 +142,19 @@ public class Main {
         }
 
         System.out.println("\nFailed to verify new PIN after three attempts.");
-        return -1;   
+        return true;   
     }
 
 
-    public static void balanceInquiry(int accNum, double balance) {
+    public static void balanceInquiry(Account account) {
     }
 
 
-    public static void deposit(Scanner scanner, double balance, String[][] transactions) {
+    public static void deposit(Scanner scanner, Account account, String[][] transactions) {
     }
 
 
-    public static void withdraw(Scanner scanner, double balance, String[][] transactions) {
+    public static void withdraw(Scanner scanner, Account account, String[][] transactions) {
     }
 
     // // Do this last after the rest are done.

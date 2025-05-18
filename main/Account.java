@@ -28,4 +28,8 @@ public class Account {
     public void setBalance(double newBalance) {
         this.balance = newBalance;
     }
+
+    public String toCSV() {
+        return accNum + "," + pinNum + "," + balance;
+    }
 }

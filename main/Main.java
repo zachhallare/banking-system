@@ -1,23 +1,43 @@
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String[][] transactions = new String[4][100];
+        String[][] transactions = new String[4][100];       // for transaction history later.
+        ArrayList<Account> accounts = new ArrayList<>();
+        
 
-        Account account = new Account(12410314, 123456, 1000);
+        // put in separate function
+        String filePath = "accounts.txt";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                int accNum = Integer.parseInt(parts[0].trim());
+                int pinNum = Integer.parseInt(parts[1].trim());
+                double balance = Double.parseDouble(parts[2].trim());
+                accounts.add(new Account(accNum, pinNum, balance));
+            }
+        }
+        catch(IOException error) {
+            System.out.println("Something went wrong" + error.getMessage());
+        }
+
         boolean bankIsOpen = true;
         boolean reLogInRequired = true;
+        Account currentAccount = null;
 
         while (bankIsOpen) {
             boolean logInSuccess = true;
             
             if (reLogInRequired) {
-                logInSuccess = initialLogIn(scanner, account);
+                currentAccount = initialLogIn(scanner, accounts);
+                logInSuccess = currentAccount != null;
             }
 
             if (logInSuccess) {
-                reLogInRequired = displayMainMenu(scanner, account, transactions);
+                reLogInRequired = displayMainMenu(scanner, currentAccount, transactions);
             }
             else {
                 bankIsOpen = false;
@@ -28,9 +48,8 @@ public class Main {
     }
 
 
-    public static boolean initialLogIn(Scanner scanner, Account account) {
-        int enteredAccNum;
-        int enteredPinNum;
+    public static Account initialLogIn(Scanner scanner, ArrayList<Account> accounts) {
+        int enteredAccNum, enteredPinNum;
         int numOfLoginAttempts = 0;
 
         while (numOfLoginAttempts < 3) {
@@ -40,21 +59,23 @@ public class Main {
             System.out.print("Enter PIN (Six Digits): ");
             enteredPinNum = scanner.nextInt();
 
-            if (enteredAccNum == account.getAccNum() && enteredPinNum == account.getPinNum()) {
-                System.out.printf("Welcome, %d!\n\n", account.getAccNum());
-                return true;
-            }
-            else {
-                numOfLoginAttempts++;
-                if (numOfLoginAttempts < 3) {
-                    System.out.println("Incorrect account number or PIN. Please try again.\n");
+            for (int i = 0; i < accounts.size(); i++) {
+                Account acc = accounts.get(i);
+                if (enteredAccNum == acc.getAccNum() && enteredPinNum == acc.getPinNum()) {
+                    System.out.printf("Welcome, %d!\n\n", acc.getAccNum());
+                    return acc;
                 }
+            }
+
+            numOfLoginAttempts++;
+            if (numOfLoginAttempts < 3) {
+                System.out.println("Incorrect account number or PIN. Please try again.\n");
             }
         }
 
         System.out.println("\nFailed logins reached three attempts.");
         System.out.println("The transaction will be terminated!\n");
-        return false;
+        return null;
     }
 
 

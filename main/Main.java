@@ -83,7 +83,15 @@ public class Main {
                 }
                 case 2 -> balanceInquiry(account);
                 case 3 -> deposit(scanner, account, transactions);
-                case 4 -> withdraw(scanner, account, transactions);
+                case 4 -> {
+                    if (account.getBalance() <= 0) {
+                        System.out.println("Insufficient Funds.\n");
+                        continue;
+                    }
+                    else {
+                        withdraw(scanner, account, transactions);
+                    }
+                }
                 // case 5 -> viewTransactions(transactions);
                 case 0 -> {
                     System.out.println("Logging out...");
@@ -147,10 +155,75 @@ public class Main {
 
 
     public static void balanceInquiry(Account account) {
+        System.out.printf("\nAccount Number: %d\n", account.getAccNum());   
+        System.out.printf("Your current balance is: P%.2f\n", account.getBalance());      
     }
 
 
     public static void deposit(Scanner scanner, Account account, String[][] transactions) {
+        int denominationNum, numberOfBills;         
+        double currentDeposit = 0; 
+        double runningDeposit = 0;
+        char moreDeposits;         
+        boolean continueDeposit = true;
+        boolean depositWasMade = false;
+
+        while (continueDeposit) {
+            System.out.println("Choose your deposit denomination:");
+            System.out.println("[1] - P100");
+            System.out.println("[2] - P200");
+            System.out.println("[3] - P500");
+            System.out.println("[4] - P1000");
+            System.out.println("[0] - Cancel");
+            System.out.print("Denomination: ");
+            denominationNum = scanner.nextInt();
+
+            if (denominationNum == 0) {
+                System.out.printf("Deposit Canceled. Your balance is still P%.2f.\n", account.getBalance());
+                continueDeposit = false;    // Stops depositing process.
+            }
+
+            int denominationVal;
+            switch (denominationNum) {
+                case 1 -> denominationVal = 100;
+                case 2 -> denominationVal = 200;
+                case 3 -> denominationVal = 500;
+                case 4 -> denominationVal = 1000;
+                default -> {
+                    System.out.println("Invalid denomination. Please try again.\n");
+                    continue;
+                }
+            }
+
+            System.out.print("Number of bills (up to 10 bills only): ");
+            numberOfBills = scanner.nextInt();
+
+            if (numberOfBills <= 0 || numberOfBills >= 11) {
+                System.out.println("Invalid number of bills. Please enter a value between 1 and 10.\n");
+                continue;      
+            }
+
+            currentDeposit = denominationVal * numberOfBills;
+            runningDeposit += currentDeposit;
+            depositWasMade = true;
+
+            System.out.printf("Current Deposit: P%.2f\n", currentDeposit);
+            System.out.printf("Running Deposit: P%.2f\n", runningDeposit);
+
+            System.out.printf("Do you wish to deposit more? (Y/N): ");
+            moreDeposits = scanner.next().toLowerCase().charAt(0);
+
+            if (moreDeposits != 'y') {
+                continueDeposit = false;    
+            }
+        }    
+
+        if (depositWasMade) {
+            double newBalance = account.getBalance() + runningDeposit;
+            account.setBalance(newBalance);
+            System.out.printf("Deposit Successful! Your new balance is P%.2f.\n\n", newBalance);
+            // addTransaction(aTransactionData, pTransactionCount, pTransactionNumber, 'D', +fRunningDeposit, *pBalance);
+        }
     }
 
 

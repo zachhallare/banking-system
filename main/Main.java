@@ -54,7 +54,7 @@ public class Main {
 
 
     // Updates any changes in the account info.
-    public static void updateAccountInfo(String filePath, int targetAccNum, double newBalance) {
+    public static void updateAccountInfo(String filePath, int targetAccNum, double newBalance, int newPin) {
         ArrayList<Account> accounts = new ArrayList<>();
 
         // Reads the file.
@@ -67,7 +67,13 @@ public class Main {
                 double balance = Double.parseDouble(parts[2].trim());
 
                 if (accNum == targetAccNum) {
-                    balance = newBalance;
+                    // If it has -1, it doesn't change the value.
+                    if (newBalance != -1) {
+                        balance = newBalance;
+                    }
+                    if (newPin != -1) {
+                        pinNum = newPin;
+                    }
                 }
 
                 accounts.add(new Account(accNum, pinNum, balance));
@@ -206,6 +212,7 @@ public class Main {
 
             if (newPin == confirmPin) {
                 account.setPinNum(newPin);     
+                updateAccountInfo("accounts.txt", account.getAccNum(), -1, newPin);
                 System.out.println("PIN changed successfully. Please re-login.\n\n");
                 numOfPinAttempts = 0; 
                 return false;                 
@@ -237,7 +244,7 @@ public class Main {
         boolean keepDepositing = true;
 
         while (keepDepositing) {
-            System.out.println("Choose your deposit denomination:");
+            System.out.println("\n\nChoose your deposit denomination:");
             System.out.println("[1] - P100");
             System.out.println("[2] - P200");
             System.out.println("[3] - P500");
@@ -287,7 +294,7 @@ public class Main {
 
         account.setBalance(account.getBalance() + runningDeposit);
         System.out.printf("Deposit Successful! Your new balance is P%.2f.\n\n", account.getBalance());
-        updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance());
+        updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance(), -1);
     }
 
 
@@ -322,7 +329,7 @@ public class Main {
             account.setBalance(account.getBalance() - withdrawalAmount);
             System.out.printf("\nP%d.00 has been withdrawn.\n", withdrawalAmount);
             System.out.printf("Your balance is P%.2f.\n", account.getBalance());
-            updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance());
+            updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance(), -1);
         }
     }
 

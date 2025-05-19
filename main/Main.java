@@ -4,8 +4,8 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String[][] transactions = new String[4][100];       // for transaction history later.
         ArrayList<Account> accounts = loadAccountsFromFile("accounts.txt");
+        String[][] transactions = new String[4][100];       // for transaction history later.
     
         boolean bankIsOpen = true;
         boolean reLogInRequired = true;
@@ -30,6 +30,8 @@ public class Main {
         scanner.close();
     }
 
+
+    // Reads the accounts.txt file.
     public static ArrayList<Account> loadAccountsFromFile(String filePath) {
         ArrayList<Account> accounts = new ArrayList<>();
         
@@ -44,13 +46,52 @@ public class Main {
             }
         }
         catch(IOException error) {
-            System.out.println("Something went wrong" + error.getMessage());
+            System.out.println("Something went wrong " + error.getMessage());
         }
 
         return accounts;
     }
 
 
+    // Updates any changes in the account info.
+    public static void updateAccountInfo(String filePath, int targetAccNum, double newBalance) {
+        ArrayList<Account> accounts = new ArrayList<>();
+
+        // Reads the file.
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                int accNum = Integer.parseInt(parts[0].trim());
+                int pinNum = Integer.parseInt(parts[1].trim());
+                double balance = Double.parseDouble(parts[2].trim());
+
+                if (accNum == targetAccNum) {
+                    balance = newBalance;
+                }
+
+                accounts.add(new Account(accNum, pinNum, balance));
+            } 
+        }
+        catch (IOException error) {
+            System.out.println("Something went wrong " + error.getMessage());
+        }
+
+        // Overwrites the file.
+        try (FileWriter writer = new FileWriter(filePath)) {
+            for (int i = 0; i < accounts.size(); i++) {
+                Account acc = accounts.get(i);
+                writer.write(acc.getAccNum() + ", " + acc.getPinNum() + ", " + acc.getBalance());
+                writer.write(System.lineSeparator());;
+            }
+        }
+        catch (IOException error) {
+            System.out.println("Something went wrong " + error.getMessage());
+        }
+    }
+
+
+    // Asks the user to login.
     public static Account initialLogIn(Scanner scanner, ArrayList<Account> accounts) {
         int enteredAccNum, enteredPinNum;
         int numOfLoginAttempts = 0;
@@ -63,10 +104,10 @@ public class Main {
             enteredPinNum = scanner.nextInt();
 
             for (int i = 0; i < accounts.size(); i++) {
-                Account acc = accounts.get(i);
-                if (enteredAccNum == acc.getAccNum() && enteredPinNum == acc.getPinNum()) {
-                    System.out.printf("Welcome, %d!\n\n", acc.getAccNum());
-                    return acc;
+                Account account = accounts.get(i);
+                if (enteredAccNum == account.getAccNum() && enteredPinNum == account.getPinNum()) {
+                    System.out.printf("Welcome, %d!\n\n", account.getAccNum());
+                    return account;
                 }
             }
 
@@ -82,6 +123,7 @@ public class Main {
     }
 
 
+    // Displays the Main Menu
     public static Boolean displayMainMenu(Scanner scanner, Account account, String[][] transactions) {
         int enteredChoice = -1;
 
@@ -129,6 +171,7 @@ public class Main {
     }
 
 
+    // Option 1: Changes the user pin number.
     public static boolean changePin(Scanner scanner, Account account) {
         int oldPin, newPin, confirmPin;
         int numOfPinAttempts = 0;
@@ -178,12 +221,14 @@ public class Main {
     }
 
 
+    // Option 2: Displays the current balance.
     public static void balanceInquiry(Account account) {
         System.out.printf("\nAccount Number: %d\n", account.getAccNum());   
         System.out.printf("Your current balance is: P%.2f\n", account.getBalance());      
     }
 
 
+    // Option 3: Deposits money to user's account.
     public static void deposit(Scanner scanner, Account account, String[][] transactions) {
         int denominationNum, numberOfBills;         
         double currentDeposit = 0; 
@@ -242,10 +287,11 @@ public class Main {
 
         account.setBalance(account.getBalance() + runningDeposit);
         System.out.printf("Deposit Successful! Your new balance is P%.2f.\n\n", account.getBalance());
-        // addTransaction(aTransactionData, pTransactionCount, pTransactionNumber, 'D', +fRunningDeposit, *pBalance);
+        updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance());
     }
 
 
+    // Option 4: Withdraw money from the user's account.
     public static void withdraw(Scanner scanner, Account account, String[][] transactions) {
         int withdrawalAmount = 0;     
         boolean isWithdrawing = true;
@@ -276,9 +322,13 @@ public class Main {
             account.setBalance(account.getBalance() - withdrawalAmount);
             System.out.printf("\nP%d.00 has been withdrawn.\n", withdrawalAmount);
             System.out.printf("Your balance is P%.2f.\n", account.getBalance());
-            // addTransaction(aTransactionData, pTransactionCount, pTransactionNumber, 'W', -nWithdrawalAmount, *pBalance);
+            updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance());
         }
     }
+
+    
+
+
 
     // // Do this last after the rest are done.
     // public static void addTransactions(double balance, String[][] transactions) {

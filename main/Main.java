@@ -5,25 +5,8 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String[][] transactions = new String[4][100];       // for transaction history later.
-        ArrayList<Account> accounts = new ArrayList<>();
-        
-
-        // put in separate function
-        String filePath = "accounts.txt";
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                int accNum = Integer.parseInt(parts[0].trim());
-                int pinNum = Integer.parseInt(parts[1].trim());
-                double balance = Double.parseDouble(parts[2].trim());
-                accounts.add(new Account(accNum, pinNum, balance));
-            }
-        }
-        catch(IOException error) {
-            System.out.println("Something went wrong" + error.getMessage());
-        }
-
+        ArrayList<Account> accounts = loadAccountsFromFile("accounts.txt");
+    
         boolean bankIsOpen = true;
         boolean reLogInRequired = true;
         Account currentAccount = null;
@@ -45,6 +28,26 @@ public class Main {
         }
 
         scanner.close();
+    }
+
+    public static ArrayList<Account> loadAccountsFromFile(String filePath) {
+        ArrayList<Account> accounts = new ArrayList<>();
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                int accNum = Integer.parseInt(parts[0].trim());
+                int pinNum = Integer.parseInt(parts[1].trim());
+                double balance = Double.parseDouble(parts[2].trim());
+                accounts.add(new Account(accNum, pinNum, balance));
+            }
+        }
+        catch(IOException error) {
+            System.out.println("Something went wrong" + error.getMessage());
+        }
+
+        return accounts;
     }
 
 

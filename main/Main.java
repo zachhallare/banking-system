@@ -3,10 +3,11 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        // ArrayList<Account> accounts = loadAccountsFromFile("accounts.txt");
         ArrayList<Account> accounts = AccountManager.loadAccountsFromFile();
-        String[][] transactions = new String[4][100];       // for transaction history later.
-    
+        String[][] transactions = new String[4][100];       // change this, make a transaction class (transaction number, type of transaction, amount, total balance))
+        // ArrayList<Transaction> transactions = new ArrayList<>();
+        // to add stuff to the array it will be like: transactions.add(new Transaction(number, type, amount, balance))
+
         boolean bankIsOpen = true;
         boolean reLogInRequired = true;
         Account currentAccount = null;

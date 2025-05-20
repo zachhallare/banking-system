@@ -15,8 +15,32 @@ public class Main {
             boolean logInSuccess = true;
             
             if (reLogInRequired) {
-                currentAccount = initialLogIn(scanner, accounts);
-                logInSuccess = currentAccount != null;
+                System.out.println("==== WELCOME TO BRIGHT BANK! ====");
+                System.out.println("[1] Log In");
+                System.out.println("[2] Create New Account");
+                System.out.println("[0] Exit");
+                System.out.print("Enter option number: ");
+                int introChoice = scanner.nextInt();
+
+                switch (introChoice) {
+                    case 1 -> {
+                        currentAccount = initialLogIn(scanner, accounts);
+                        logInSuccess = currentAccount != null;
+                    }
+                    case 2 -> {
+                        currentAccount = createNewAccount(scanner, accounts);
+                        logInSuccess = true;
+                    }
+                    case 0 -> {
+                        System.out.println("\nThank you for using our banking system!");
+                        System.exit(0);
+                    }
+                    default -> {
+                        System.out.println("Invalid choice Try again");
+                        continue;
+                    }
+                }
+
             }
 
             if (logInSuccess) {
@@ -97,13 +121,57 @@ public class Main {
     }
 
 
+    // Creates new account for new users.
+    public static Account createNewAccount(Scanner scanner, ArrayList<Account> accounts) {
+        int accNum, pinNum;
+
+        // Asks for User Information.
+        System.out.print("\nEnter a new Account Number: ");
+        accNum = scanner.nextInt();
+
+        for (int i = 0; i < accounts.size(); i++) {
+            Account account = accounts.get(i);
+            if (account.getAccNum() == accNum) {
+                System.out.println("Account number already exists. Try again.\n");
+                return null;
+            }
+        }
+
+        do {
+            System.out.print("Enter a 6-digit PIN [100000 - 999999]: ");
+            pinNum = scanner.nextInt();
+            if (pinNum < 100000) {
+                System.out.println("Invalid PIN. Must be greater than 100000.\n");
+            }
+            else if (pinNum > 999999) {
+                System.out.println("Invalid PIN. Must be less than 999999.");
+            }
+        } while (pinNum < 100000 && pinNum > 999999);
+
+
+        // Adds the new account to accounts.txt
+        Account newAccount = new Account(accNum, pinNum, 0);
+        accounts.add(newAccount);
+
+        try (FileWriter writer = new FileWriter("accounts.txt", true)) {
+            writer.write(accNum + ", " + pinNum + ", 0.0");
+        }
+        catch (IOException error) {
+            System.out.println("Error saving new account: " + error.getMessage());
+        }
+
+        System.out.println("Account successfully created! You are now logged in.\n");
+        return newAccount;
+    }
+
+
     // Asks the user to login.
     public static Account initialLogIn(Scanner scanner, ArrayList<Account> accounts) {
         int enteredAccNum, enteredPinNum;
         int numOfLoginAttempts = 0;
 
         while (numOfLoginAttempts < 3) {
-            System.out.print("Enter Account Number: ");
+            System.out.print("\nEnter Account Number: ");
             enteredAccNum = scanner.nextInt();
 
             System.out.print("Enter PIN (Six Digits): ");

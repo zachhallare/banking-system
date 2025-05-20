@@ -1,10 +1,10 @@
-import java.io.*;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Account> accounts = loadAccountsFromFile("accounts.txt");
+        // ArrayList<Account> accounts = loadAccountsFromFile("accounts.txt");
+        ArrayList<Account> accounts = AccountManager.loadAccountsFromFile();
         String[][] transactions = new String[4][100];       // for transaction history later.
     
         boolean bankIsOpen = true;
@@ -28,7 +28,7 @@ public class Main {
                         logInSuccess = currentAccount != null;
                     }
                     case 2 -> {
-                        createNewAccount(scanner, accounts);
+                        AccountManager.createNewAccount(scanner, accounts);
                         reLogInRequired = true;
                         continue;
                     }
@@ -41,7 +41,6 @@ public class Main {
                         continue;
                     }
                 }
-
             }
 
             if (logInSuccess) {
@@ -53,125 +52,6 @@ public class Main {
         }
 
         scanner.close();
-    }
-
-
-    // Reads the accounts.txt file.
-    public static ArrayList<Account> loadAccountsFromFile(String filePath) {
-        ArrayList<Account> accounts = new ArrayList<>();
-        
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                int accNum = Integer.parseInt(parts[0].trim());
-                int pinNum = Integer.parseInt(parts[1].trim());
-                double balance = Double.parseDouble(parts[2].trim());
-                accounts.add(new Account(accNum, pinNum, balance));
-            }
-        }
-        catch(IOException error) {
-            System.out.println("Something went wrong " + error.getMessage());
-        }
-
-        return accounts;
-    }
-
-
-    // Updates any changes in the account info.
-    public static void updateAccountInfo(String filePath, int targetAccNum, double newBalance, int newPin) {
-        ArrayList<Account> accounts = new ArrayList<>();
-
-        // Reads the file.
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                int accNum = Integer.parseInt(parts[0].trim());
-                int pinNum = Integer.parseInt(parts[1].trim());
-                double balance = Double.parseDouble(parts[2].trim());
-
-                if (accNum == targetAccNum) {
-                    // If it has -1, it doesn't change the value.
-                    if (newBalance != -1) {
-                        balance = newBalance;
-                    }
-                    if (newPin != -1) {
-                        pinNum = newPin;
-                    }
-                }
-
-                accounts.add(new Account(accNum, pinNum, balance));
-            } 
-        }
-        catch (IOException error) {
-            System.out.println("Something went wrong " + error.getMessage());
-        }
-
-        // Overwrites the file.
-        try (FileWriter writer = new FileWriter(filePath)) {
-            for (int i = 0; i < accounts.size(); i++) {
-                Account acc = accounts.get(i);
-                writer.write(acc.getAccNum() + ", " + acc.getPinNum() + ", " + acc.getBalance());
-                writer.write(System.lineSeparator());
-            }
-        }
-        catch (IOException error) {
-            System.out.println("Something went wrong " + error.getMessage());
-        }
-    }
-
-
-    // Creates new account for new users.
-    public static Account createNewAccount(Scanner scanner, ArrayList<Account> accounts) {
-        int accNum, pinNum;
-        boolean isUnique;
-
-        // Asks for User Information.
-
-
-        // fix this part and make sure the account number entered is only 8 digits!
-        do {
-            System.out.print("\nEnter a new Account Number: ");
-            accNum = scanner.nextInt();
-            isUnique = true;
-
-            for (int i = 0; i < accounts.size(); i++) {
-                Account account = accounts.get(i);
-                if (account.getAccNum() == accNum) {
-                    System.out.println("Account number already exists. Try again.");
-                    isUnique = false;
-                    break;
-                }
-            }
-        } while (!isUnique);
-
-        do {
-            System.out.print("Enter a 6-digit PIN [100000 - 999999]: ");
-            pinNum = scanner.nextInt();
-            if (pinNum < 100000) {
-                System.out.println("Invalid PIN. Must be greater than 100000.\n");
-            }
-            else if (pinNum > 999999) {
-                System.out.println("Invalid PIN. Must be less than 999999.");
-            }
-        } while (pinNum < 100000 && pinNum > 999999);
-
-
-        // Adds the new account to accounts.txt
-        Account newAccount = new Account(accNum, pinNum, 0);
-        accounts.add(newAccount);
-
-        try (FileWriter writer = new FileWriter("accounts.txt", true)) {
-            writer.write(System.lineSeparator());
-            writer.write(accNum + ", " + pinNum + ", 0.0");
-        }
-        catch (IOException error) {
-            System.out.println("Error saving new account: " + error.getMessage());
-        }
-
-        System.out.println("Account successfully created!\nPlease re-login with new account.\n");
-        return newAccount;
     }
 
 
@@ -278,7 +158,6 @@ public class Main {
                 numOfPinAttempts++;
                 continue;
             }
-
             if (newPin == account.getPinNum()) {
                 System.out.println("Invalid PIN. The PIN can't be the same as the previous one.");
                 numOfPinAttempts++;       
@@ -290,7 +169,7 @@ public class Main {
 
             if (newPin == confirmPin) {
                 account.setPinNum(newPin);     
-                updateAccountInfo("accounts.txt", account.getAccNum(), -1, newPin);
+                AccountManager.updateAccountInfo(account.getAccNum(), -1, newPin);
                 System.out.println("PIN changed successfully. Please re-login.\n\n");
                 numOfPinAttempts = 0; 
                 return false;                 
@@ -372,7 +251,7 @@ public class Main {
 
         account.setBalance(account.getBalance() + runningDeposit);
         System.out.printf("Deposit Successful! Your new balance is P%.2f.\n\n", account.getBalance());
-        updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance(), -1);
+        AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
     }
 
 
@@ -407,7 +286,7 @@ public class Main {
             account.setBalance(account.getBalance() - withdrawalAmount);
             System.out.printf("\nP%d.00 has been withdrawn.\n", withdrawalAmount);
             System.out.printf("Your balance is P%.2f.\n", account.getBalance());
-            updateAccountInfo("accounts.txt", account.getAccNum(), account.getBalance(), -1);
+            AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
         }
     }
 

@@ -28,8 +28,9 @@ public class Main {
                         logInSuccess = currentAccount != null;
                     }
                     case 2 -> {
-                        currentAccount = createNewAccount(scanner, accounts);
-                        logInSuccess = true;
+                        createNewAccount(scanner, accounts);
+                        reLogInRequired = true;
+                        continue;
                     }
                     case 0 -> {
                         System.out.println("\nThank you for using our banking system!");
@@ -112,7 +113,7 @@ public class Main {
             for (int i = 0; i < accounts.size(); i++) {
                 Account acc = accounts.get(i);
                 writer.write(acc.getAccNum() + ", " + acc.getPinNum() + ", " + acc.getBalance());
-                writer.write(System.lineSeparator());;
+                writer.write(System.lineSeparator());
             }
         }
         catch (IOException error) {
@@ -124,18 +125,26 @@ public class Main {
     // Creates new account for new users.
     public static Account createNewAccount(Scanner scanner, ArrayList<Account> accounts) {
         int accNum, pinNum;
+        boolean isUnique;
 
         // Asks for User Information.
-        System.out.print("\nEnter a new Account Number: ");
-        accNum = scanner.nextInt();
 
-        for (int i = 0; i < accounts.size(); i++) {
-            Account account = accounts.get(i);
-            if (account.getAccNum() == accNum) {
-                System.out.println("Account number already exists. Try again.\n");
-                return null;
+
+        // fix this part and make sure the account number entered is only 8 digits!
+        do {
+            System.out.print("\nEnter a new Account Number: ");
+            accNum = scanner.nextInt();
+            isUnique = true;
+
+            for (int i = 0; i < accounts.size(); i++) {
+                Account account = accounts.get(i);
+                if (account.getAccNum() == accNum) {
+                    System.out.println("Account number already exists. Try again.");
+                    isUnique = false;
+                    break;
+                }
             }
-        }
+        } while (!isUnique);
 
         do {
             System.out.print("Enter a 6-digit PIN [100000 - 999999]: ");
@@ -154,13 +163,14 @@ public class Main {
         accounts.add(newAccount);
 
         try (FileWriter writer = new FileWriter("accounts.txt", true)) {
+            writer.write(System.lineSeparator());
             writer.write(accNum + ", " + pinNum + ", 0.0");
         }
         catch (IOException error) {
             System.out.println("Error saving new account: " + error.getMessage());
         }
 
-        System.out.println("Account successfully created! You are now logged in.\n");
+        System.out.println("Account successfully created!\nPlease re-login with new account.\n");
         return newAccount;
     }
 
@@ -226,7 +236,7 @@ public class Main {
                 case 4 -> {
                     if (account.getBalance() <= 0) {
                         System.out.println("Insufficient Funds.\n");
-                        continue;
+                        break;
                     }
                     else {
                         withdraw(scanner, account, transactions);

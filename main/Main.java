@@ -4,9 +4,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Account> accounts = AccountManager.loadAccountsFromFile();
-        String[][] transactions = new String[4][100];       // change this, make a transaction class (transaction number, type of transaction, amount, total balance))
-        // ArrayList<Transaction> transactions = new ArrayList<>();
-        // to add stuff to the array it will be like: transactions.add(new Transaction(number, type, amount, balance))
 
         boolean bankIsOpen = true;
         boolean reLogInRequired = true;
@@ -45,7 +42,7 @@ public class Main {
             }
 
             if (logInSuccess) {
-                reLogInRequired = displayMainMenu(scanner, currentAccount, transactions);
+                reLogInRequired = displayMainMenu(scanner, currentAccount);
             }
             else {
                 bankIsOpen = false;
@@ -89,7 +86,7 @@ public class Main {
 
 
     // Displays the Main Menu
-    public static Boolean displayMainMenu(Scanner scanner, Account account, String[][] transactions) {
+    public static Boolean displayMainMenu(Scanner scanner, Account account) {
         int enteredChoice = -1;
 
         while (enteredChoice != 0) {
@@ -113,17 +110,17 @@ public class Main {
                     return false;
                 }
                 case 2 -> balanceInquiry(account);
-                case 3 -> deposit(scanner, account, transactions);
+                case 3 -> deposit(scanner, account);
                 case 4 -> {
                     if (account.getBalance() <= 0) {
                         System.out.println("Insufficient Funds.\n");
                         break;
                     }
                     else {
-                        withdraw(scanner, account, transactions);
+                        withdraw(scanner, account);
                     }
                 }
-                // case 5 -> viewTransactions(transactions);
+                case 5 -> account.printTransactionHistory();
                 case 0 -> {
                     System.out.println("Logging out...");
                     System.exit(0);
@@ -194,7 +191,7 @@ public class Main {
 
 
     // Option 3: Deposits money to user's account.
-    public static void deposit(Scanner scanner, Account account, String[][] transactions) {
+    public static void deposit(Scanner scanner, Account account) {
         int denominationNum, numberOfBills;         
         double currentDeposit = 0; 
         double runningDeposit = 0;
@@ -257,7 +254,7 @@ public class Main {
 
 
     // Option 4: Withdraw money from the user's account.
-    public static void withdraw(Scanner scanner, Account account, String[][] transactions) {
+    public static void withdraw(Scanner scanner, Account account) {
         int withdrawalAmount = 0;     
         boolean isWithdrawing = true;
 
@@ -294,12 +291,5 @@ public class Main {
     
 
 
-
-    // // Do this last after the rest are done.
-    // public static void addTransactions(double balance, String[][] transactions) {
-    // }
-
-    // public static void viewTransactions(String[][] transactions) {
-    // }
 }
 

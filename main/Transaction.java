@@ -1,13 +1,42 @@
-public class Transaction {
-    int number;
-    String type;
-    double amount;
-    double balance;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-    Transaction(int number, String type, double amount, double balance) {
-        this.number = number;
+public class Transaction {
+    private String type;
+    private double amount;
+    private double resultingBalance;
+    private LocalDateTime timestamp;
+
+    Transaction(String type, double amount, double resultingBalance) {
         this.type = type;
         this.amount = amount;
-        this.balance = balance;
+        this.resultingBalance = resultingBalance;
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public double getResultingBalance() {
+        return resultingBalance;
+    }
+
+    public String getTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return timestamp.format(formatter);
+    }
+
+    public String getFormattedAmount() {
+        return (type.equalsIgnoreCase("Deposit") ? "+P" : "-P") + String.format("%.2f", amount);
+    }
+
+    public String toDisplayString(int number) {
+        return String.format("%-15d %-18s %-15s %-17.2f %s",
+            number, type, getFormattedAmount(), resultingBalance, getTimestamp());
     }
 }

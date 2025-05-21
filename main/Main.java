@@ -89,21 +89,12 @@ public class Main {
                 }
                 case 2 -> balanceInquiry(account);
                 case 3 -> TransactionUtil.processTransaction(scanner, account, "Deposit");
-                case 4 -> {
-                    if (account.getBalance() <= 0) {
-                        System.out.println("Insufficient Funds.\n");
-                        break;
-                    }
-                    else {
-                        TransactionUtil.processTransaction(scanner, account, "Withdraw");
-                    }
-                }
+                case 4 -> TransactionUtil.tryIfValidTransaction(scanner, account, "Withdraw");
                 // case 5 -> work in progress: transfer funds. 
                 case 6 -> account.printTransactionHistory();
                 case 0 -> {
                     System.out.println("Logging out...\n");
-                    // System.exit(0);
-                    return true;
+                    return true;    // returns to first page.
                 }
                 default -> System.out.println("Invalid option.\n");
             }

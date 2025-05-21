@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 public class TransactionUtil {
+    // Handles Deposits, Withdrawals, and Transfer of Funds.
     public static void processTransaction(Scanner scanner, Account account, String type) {
         double amount = 0;
         boolean validTransaction = false;
@@ -81,7 +82,6 @@ public class TransactionUtil {
             }
         }
 
-
         // Updates Account Manager and Transaction History. 
         if (validTransaction) {
             account.addTransactions(type, amount);
@@ -89,5 +89,15 @@ public class TransactionUtil {
             System.out.printf("%s of P%.2f successful. New Balance: P%.2f\n", type, amount, account.getBalance());
         }
     }
-}
 
+
+    // Checks if the user has money first before accessing withdrawals and transfer funds.
+    public static void tryIfValidTransaction(Scanner scanner, Account account, String type) {
+        if (account.getBalance() <= 0) {
+            System.out.printf("Insufficient funds.\nYour current balance is P%.2f.\n\n", account.getBalance());
+        }
+        else {
+            TransactionUtil.processTransaction(scanner, account, type);
+        }
+    }
+}

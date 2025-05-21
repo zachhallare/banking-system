@@ -4,7 +4,7 @@ public class InputUtil {
     public static int readIntInRange(Scanner scanner, String prompt, int minNum, int maxNum) {
         int userInput;
         while (true) {
-            System.out.println(prompt);
+            System.out.print(prompt);
             if (scanner.hasNextInt()) {
                 userInput = scanner.nextInt();
                 if (userInput >= minNum && userInput <= maxNum) {
@@ -15,7 +15,7 @@ public class InputUtil {
                 }
             }
             else {
-                System.out.println("Invalid input. Please enter a number.");
+                System.out.println("Invalid input. Please enter a valid number.");
                 scanner.next();
             }
         }

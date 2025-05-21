@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class InputUtilities {
+public class InputUtil {
     public static int readIntInRange(Scanner scanner, String prompt, int minNum, int maxNum) {
         int userInput;
         while (true) {

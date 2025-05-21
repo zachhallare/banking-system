@@ -13,12 +13,8 @@ public class Main {
             boolean logInSuccess = true;
             
             if (reLogInRequired) {
-                System.out.println("==== WELCOME TO BRIGHT BANK! ====");
-                System.out.println("[1] Log In");
-                System.out.println("[2] Create New Account");
-                System.out.println("[0] Exit");
-                System.out.print("Enter option number: ");
-                int introChoice = scanner.nextInt();
+                String[] introOptions = {"Log In", "Create New Account", "Exit"};
+                int introChoice = MenuUtil.displayMenu(scanner, "WELCOME TO BRIGHT BANK!", introOptions);
 
                 switch (introChoice) {
                     case 1 -> {
@@ -33,10 +29,6 @@ public class Main {
                     case 0 -> {
                         System.out.println("\nThank you for using our banking system!");
                         System.exit(0);
-                    }
-                    default -> {
-                        System.out.println("Invalid choice Try again");
-                        continue;
                     }
                 }
             }
@@ -96,7 +88,7 @@ public class Main {
             System.out.println("[3] - Deposit");
             System.out.println("[4] - Withdraw");
             System.out.println("[5] - View Transactions");
-            System.out.println("[0] - Logout");
+            System.out.println("[6] - Logout");
 
             System.out.print("Enter option number: ");
             enteredChoice = scanner.nextInt();
@@ -121,7 +113,7 @@ public class Main {
                     }
                 }
                 case 5 -> account.printTransactionHistory();
-                case 0 -> {
+                case 6 -> {
                     System.out.println("Logging out...");
                     System.exit(0);
                 }

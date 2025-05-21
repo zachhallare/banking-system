@@ -11,11 +11,11 @@ public class InputUtil {
                     return userInput;
                 }
                 else {
-                    System.out.println("Input must be between " + minNum + " and " + maxNum + ".");
+                    System.out.println("Input must be between " + minNum + " and " + maxNum + ".\n");
                 }
             }
             else {
-                System.out.println("Invalid input. Please enter a valid number.");
+                System.out.println("Invalid input. Please enter a valid number.\n");
                 scanner.next();
             }
         }

@@ -250,6 +250,7 @@ public class Main {
         account.setBalance(account.getBalance() + runningDeposit);
         System.out.printf("Deposit Successful! Your new balance is P%.2f.\n\n", account.getBalance());
         AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
+        account.addTransactions("Deposit", runningDeposit);
     }
 
 
@@ -284,6 +285,7 @@ public class Main {
             account.setBalance(account.getBalance() - withdrawalAmount);
             System.out.printf("\nP%d.00 has been withdrawn.\n", withdrawalAmount);
             System.out.printf("Your balance is P%.2f.\n", account.getBalance());
+            account.addTransactions("Withdrawal", withdrawalAmount);
             AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
         }
     }

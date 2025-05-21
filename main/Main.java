@@ -51,11 +51,8 @@ public class Main {
         int numOfLoginAttempts = 0;
 
         while (numOfLoginAttempts < 3) {
-            System.out.print("\nEnter Account Number: ");
-            enteredAccNum = scanner.nextInt();
-
-            System.out.print("Enter PIN (Six Digits): ");
-            enteredPinNum = scanner.nextInt();
+            enteredAccNum = InputUtil.readIntInRange(scanner, "\nEnter Account Number:", 10000000, 99999999);
+            enteredPinNum = InputUtil.readIntInRange(scanner, "Enter PIN (Six Digits): ", 100000, 999999);
 
             for (int i = 0; i < accounts.size(); i++) {
                 Account account = accounts.get(i);
@@ -66,9 +63,6 @@ public class Main {
             }
 
             numOfLoginAttempts++;
-            if (numOfLoginAttempts < 3) {
-                System.out.println("Incorrect account number or PIN. Please try again.\n");
-            }
         }
 
         System.out.println("\nFailed logins reached three attempts.");
@@ -79,19 +73,11 @@ public class Main {
 
     // Displays the Main Menu
     public static Boolean displayMainMenu(Scanner scanner, Account account) {
+        String[] options = {"Change PIN", "Balance Inquiry", "Deposit", "Withdraw", "Transfer Funds", "View Transactions", "Logout"};
         int enteredChoice = -1;
 
         while (enteredChoice != 0) {
-            System.out.println("\n====== MAIN MENU ======");
-            System.out.println("[1] - Change PIN");
-            System.out.println("[2] - Balance Inquiry");
-            System.out.println("[3] - Deposit");
-            System.out.println("[4] - Withdraw");
-            System.out.println("[5] - View Transactions");
-            System.out.println("[6] - Logout");
-
-            System.out.print("Enter option number: ");
-            enteredChoice = scanner.nextInt();
+            enteredChoice = MenuUtil.displayMenu(scanner, "MAIN MENU", options);
 
             switch (enteredChoice) {
                 case 1 -> {
@@ -102,20 +88,22 @@ public class Main {
                     return false;
                 }
                 case 2 -> balanceInquiry(account);
-                case 3 -> deposit(scanner, account);
+                case 3 -> TransactionUtil.processTransaction(scanner, account, "Deposit");
                 case 4 -> {
                     if (account.getBalance() <= 0) {
                         System.out.println("Insufficient Funds.\n");
                         break;
                     }
                     else {
-                        withdraw(scanner, account);
+                        TransactionUtil.processTransaction(scanner, account, "Withdraw");
                     }
                 }
-                case 5 -> account.printTransactionHistory();
-                case 6 -> {
+                // case 5 -> work in progress: transfer funds. 
+                case 6 -> account.printTransactionHistory();
+                case 0 -> {
                     System.out.println("Logging out...");
-                    System.exit(0);
+                    // System.exit(0);
+                    return true;
                 }
                 default -> System.out.println("Invalid option.\n");
             }
@@ -175,115 +163,10 @@ public class Main {
     }
 
 
-    // Option 2: Displays the current balance.
+    // Option 2 - Balance Inquiry.
     public static void balanceInquiry(Account account) {
         System.out.printf("\nAccount Number: %d\n", account.getAccNum());   
         System.out.printf("Your current balance is: P%.2f\n", account.getBalance());      
     }
-
-
-    // Option 3: Deposits money to user's account.
-    public static void deposit(Scanner scanner, Account account) {
-        int denominationNum, numberOfBills;         
-        double currentDeposit = 0; 
-        double runningDeposit = 0;
-        char moreDeposits;         
-        boolean keepDepositing = true;
-
-        while (keepDepositing) {
-            System.out.println("\n\nChoose your deposit denomination:");
-            System.out.println("[1] - P100");
-            System.out.println("[2] - P200");
-            System.out.println("[3] - P500");
-            System.out.println("[4] - P1000");
-            System.out.println("[0] - Cancel");
-            System.out.print("Denomination: ");
-            denominationNum = scanner.nextInt();
-
-            if (denominationNum == 0) {
-                System.out.printf("Deposit Canceled. Your balance is still P%.2f.\n", account.getBalance());
-                keepDepositing = false;    
-            }
-
-            int denominationVal;
-            switch (denominationNum) {
-                case 1 -> denominationVal = 100;
-                case 2 -> denominationVal = 200;
-                case 3 -> denominationVal = 500;
-                case 4 -> denominationVal = 1000;
-                default -> {
-                    System.out.println("Invalid denomination. Please try again.\n");
-                    continue;
-                }
-            }
-
-            System.out.print("Number of bills (up to 10 bills only): ");
-            numberOfBills = scanner.nextInt();
-
-            if (numberOfBills <= 0 || numberOfBills >= 11) {
-                System.out.println("Invalid number of bills. Please enter a value between 1 and 10.\n");
-                continue;      
-            }
-
-            currentDeposit = denominationVal * numberOfBills;
-            runningDeposit += currentDeposit;
-
-            System.out.printf("Current Deposit: P%.2f\n", currentDeposit);
-            System.out.printf("Running Deposit: P%.2f\n", runningDeposit);
-
-            System.out.printf("Do you wish to deposit more? (Y/N): ");
-            moreDeposits = scanner.next().toLowerCase().charAt(0);
-
-            if (moreDeposits != 'y') {
-                keepDepositing = false;    
-            }
-        }    
-
-        account.setBalance(account.getBalance() + runningDeposit);
-        System.out.printf("Deposit Successful! Your new balance is P%.2f.\n\n", account.getBalance());
-        AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
-        account.addTransactions("Deposit", runningDeposit);
-    }
-
-
-    // Option 4: Withdraw money from the user's account.
-    public static void withdraw(Scanner scanner, Account account) {
-        int withdrawalAmount = 0;     
-        boolean isWithdrawing = true;
-
-        while (isWithdrawing) {
-            System.out.print("\nHow much do you wish to withdraw? \nInput '0' to cancel (Intervals of P100 only): ");
-            withdrawalAmount = scanner.nextInt();
-
-            if (withdrawalAmount == 0) {
-                System.out.println("Transaction is canceled.\n");
-                isWithdrawing = false;
-            }
-            else if (withdrawalAmount < 0) {
-                System.out.println("You cannot withdraw a negative amount.\n");
-            }
-            else if (withdrawalAmount > account.getBalance()) {
-                System.out.printf("Sorry, your balance is insufficient.\nYour current balance is P%.2f.\n\n", account.getBalance());
-            }
-            else if (withdrawalAmount % 100 != 0) {
-                System.out.println("You can only withdraw in intervals of P100.00.\n");
-            }
-            else {
-                isWithdrawing = false; 
-            }
-        }     
-
-        if (withdrawalAmount > 0) {
-            account.setBalance(account.getBalance() - withdrawalAmount);
-            System.out.printf("\nP%d.00 has been withdrawn.\n", withdrawalAmount);
-            System.out.printf("Your balance is P%.2f.\n", account.getBalance());
-            account.addTransactions("Withdrawal", withdrawalAmount);
-            AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
-        }
-    }
-
-    
-
-
 }
 

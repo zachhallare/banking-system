@@ -73,7 +73,7 @@ public class TransactionUtil {
                 System.out.println("Withdrawal amount must be positive.");
             }
             else if (amount > account.getBalance()) {
-                System.out.println("Insufficient funds.");
+                System.out.printf("Insufficient funds.\nYour current balance is P%.2f.\n\n", account.getBalance());
             }
             else {
                 account.setBalance(account.getBalance() - amount);

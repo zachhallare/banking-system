@@ -71,7 +71,7 @@ public class Main {
     }
 
 
-    // Displays the Main Menu
+    // Displays the Main Menu.
     public static Boolean displayMainMenu(Scanner scanner, Account account) {
         String[] options = {"Change PIN", "Balance Inquiry", "Deposit", "Withdraw", "Transfer Funds", "View Transactions", "Logout"};
         int enteredChoice = -1;
@@ -101,7 +101,7 @@ public class Main {
                 // case 5 -> work in progress: transfer funds. 
                 case 6 -> account.printTransactionHistory();
                 case 0 -> {
-                    System.out.println("Logging out...");
+                    System.out.println("Logging out...\n");
                     // System.exit(0);
                     return true;
                 }
@@ -119,37 +119,28 @@ public class Main {
         int numOfPinAttempts = 0;
 
         while (numOfPinAttempts < 3) {
-            System.out.print("\nEnter current PIN (Six Digits [100000 - 999999]): ");
-            oldPin = scanner.nextInt();
+            oldPin = InputUtil.readIntInRange(scanner, "Enter current PIN (Six Digits [100000 - 999999]): ", 100000, 999999);
 
             if (oldPin != account.getPinNum()) {
-                System.out.println("Invalid Pin. Entered PIN does not match with current PIN.");
-                numOfPinAttempts++;  
-                continue;     
-            }
-            
-            System.out.print("Enter new PIN (Six Digits [100000 - 999999]): ");
-            newPin = scanner.nextInt();
-
-            if (newPin < 100000 || newPin > 999999) {
-                System.out.println("Invalid PIN. New PIN must be a six-digit number.");
+                System.out.println("Invalid PIN. Entered PIN does not match with current PIN.\n");
                 numOfPinAttempts++;
                 continue;
             }
+
+            newPin = InputUtil.readIntInRange(scanner, "Enter new PIN (Six Digits [100000 - 999999]): ", 100000, 999999);
+
             if (newPin == account.getPinNum()) {
                 System.out.println("Invalid PIN. The PIN can't be the same as the previous one.");
                 numOfPinAttempts++;       
                 continue;    
             }
 
-            System.out.print("Confirm new PIN: ");
-            confirmPin = scanner.nextInt();
+            confirmPin = InputUtil.readIntInRange(scanner, "Confirm new PIN: ", 100000, 999999);
 
             if (newPin == confirmPin) {
                 account.setPinNum(newPin);     
                 AccountManager.updateAccountInfo(account.getAccNum(), -1, newPin);
                 System.out.println("PIN changed successfully. Please re-login.\n\n");
-                numOfPinAttempts = 0; 
                 return false;                 
             }
             else {

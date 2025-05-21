@@ -13,6 +13,6 @@ public class MenuUtil {
         }
 
         String prompt = "Enter option number: ";
-        return InputUtil.readIntInRange(scanner, prompt, 1, userOptions.length);
+        return InputUtil.readIntInRange(scanner, prompt, 0, userOptions.length - 1);
     }
 }

@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.util.*;
 
 public class TransactionUtil {
     // Handles Deposits, Withdrawals, and Transfer of Funds.
@@ -88,6 +88,7 @@ public class TransactionUtil {
             boolean continueTransfering = true;      
 
             do {
+                // Enter account number to send to.
                 String accNumPrompt = "Enter Account Number (Eight Digits [10000000 - 99999999]): ";
                 accNumToTransferTo = InputUtil.readIntInRange(scanner, accNumPrompt, 10000000, 99999999);
             
@@ -96,7 +97,23 @@ public class TransactionUtil {
                     System.out.println("Please enter a different account number.\n");
                     continue;
                 }
-                
+
+                // Load all account created accounts and find the recipient.
+                ArrayList<Account> allAccounts = AccountManager.loadAccountsFromFile();
+                Account recipientAccount = null;
+                for (int i = 0; i < allAccounts.size(); i++) {
+                    if (allAccounts.get(i).getAccNum() == accNumToTransferTo) {
+                        recipientAccount = allAccounts.get(i);
+                        break;
+                    }
+                }
+
+                if (recipientAccount == null) {
+                    System.out.println("The account number you entered does not exist.\n");
+                    continue;
+                }
+
+                // Enter the transfer amount.
                 String amountPrompt = "Enter amount to transfer (P1 - P50,000): ";
                 double transferAmount = InputUtil.readIntInRange(scanner, amountPrompt, 1, 50000);
                     
@@ -104,8 +121,16 @@ public class TransactionUtil {
                     System.out.printf("Sorry, your balance is insufficient. Your current balance is P%.2f.\n", account.getBalance());
                 }
                 else {
-                    System.out.printf("%.2f has been transferred to %d.\n", transferAmount, accNumToTransferTo);
+                    // Deduct from sender.
                     account.setBalance(account.getBalance() - transferAmount);
+                    AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
+
+                    // Add to recipient.
+                    double newRecipientBalance = recipientAccount.getBalance() + transferAmount;
+                    AccountManager.updateAccountInfo(recipientAccount.getAccNum(), newRecipientBalance, -1);
+
+                    // Confirming the transfer.
+                    System.out.printf("%.2f has been transferred to %d.\n", transferAmount, accNumToTransferTo);
                     continueTransfering = false; 
                 }
             } while (continueTransfering);  

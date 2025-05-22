@@ -82,6 +82,35 @@ public class TransactionUtil {
             }
         }
 
+        // Option 5 - Transfer Funds
+        else if (type.equalsIgnoreCase("Transfer Funds")){
+            int accNumToTransferTo;      
+            boolean continueTransfering = true;      
+
+            do {
+                String accNumPrompt = "Enter Account Number (Eight Digits [10000000 - 99999999]): ";
+                accNumToTransferTo = InputUtil.readIntInRange(scanner, accNumPrompt, 10000000, 99999999);
+            
+                if (accNumToTransferTo == account.getAccNum()) {
+                    System.out.println("You cannot transfer money to your own account number.");
+                    System.out.println("Please enter a different account number.\n");
+                    continue;
+                }
+                
+                String amountPrompt = "Enter amount to transfer (P1 - P50,000): ";
+                double transferAmount = InputUtil.readIntInRange(scanner, amountPrompt, 1, 50000);
+                    
+                if (transferAmount > account.getBalance()) {
+                    System.out.printf("Sorry, your balance is insufficient. Your current balance is P%.2f.\n", account.getBalance());
+                }
+                else {
+                    System.out.printf("%.2f has been transferred to %d.\n", transferAmount, accNumToTransferTo);
+                    account.setBalance(account.getBalance() - transferAmount);
+                    continueTransfering = false; 
+                }
+            } while (continueTransfering);  
+        }
+        
         // Updates Account Manager and Transaction History. 
         if (validTransaction) {
             account.addTransactions(type, amount);

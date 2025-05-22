@@ -91,6 +91,7 @@ public class Main {
                 case 3 -> TransactionUtil.processTransaction(scanner, account, "Deposit");
                 case 4 -> TransactionUtil.tryIfValidTransaction(scanner, account, "Withdraw");
                 // case 5 -> work in progress: transfer funds. 
+                // case 5 -> TransactionUtil.tryIfValidTransaction(scanner, account, "Transfer Funds");
                 case 6 -> account.printTransactionHistory();
                 case 0 -> {
                     System.out.println("Logging out...\n");

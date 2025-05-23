@@ -77,10 +77,6 @@ public class Account {
         addTransactions("Transfer Funds", amount);
     }
 
-    public void payBills(double amount) {
-        addTransactions("Pay Bills", amount);
-    }
-
     // Displays Transaction History.
     public void printTransactionHistory() {
         System.out.println("Transaction #   Transaction Type   Amount           Running Balance   Timestamp");

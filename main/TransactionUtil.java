@@ -59,14 +59,16 @@ public class TransactionUtil {
 
         // Option 4 - Withdraw
         else if (type.equalsIgnoreCase("Withdraw")) {
-            amount = InputUtil.readDouble(scanner, "Enter withdrawal amount:");
-            if (amount <= 0) {
+            double withdrawAmount;
+            withdrawAmount = InputUtil.readDouble(scanner, "Enter withdrawal amount:");
+            if (withdrawAmount <= 0) {
                 System.out.println("Withdrawal amount must be positive.");
             }
-            else if (amount > account.getBalance()) {
+            else if (withdrawAmount > account.getBalance()) {
                 System.out.printf("Insufficient funds.\nYour current balance is P%.2f.\n\n", account.getBalance());
             }
             else {
+                amount = withdrawAmount;
                 validTransaction = true;
             }
         }
@@ -110,12 +112,17 @@ public class TransactionUtil {
                     System.out.printf("Sorry, your balance is insufficient. Your current balance is P%.2f.\n", account.getBalance());
                 }
                 else {
+                    // Deduct from sender.
+                    account.setBalance(account.getBalance() - transferAmount);
+                    AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
+
                     // Add to recipient.
                     double newRecipientBalance = recipientAccount.getBalance() + transferAmount;
                     AccountManager.updateAccountInfo(recipientAccount.getAccNum(), newRecipientBalance, -1);
 
                     // Confirming the transfer.
                     System.out.printf("%.2f has been transferred to %d.\n", transferAmount, accNumToTransferTo);
+                    amount = transferAmount;
                     continueTransfering = false; 
                 }
             } while (continueTransfering);  

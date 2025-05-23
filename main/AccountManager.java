@@ -99,7 +99,7 @@ public class AccountManager {
         Account newAcc = new Account(accNum, pinNum, 0);
         accounts.add(newAcc);
 
-        try (FileWriter writer = new FileWriter("accounts.txt", true)) {
+        try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
             writer.write(System.lineSeparator());
             writer.write(accNum + ", " + pinNum + ", 0.0");
         }

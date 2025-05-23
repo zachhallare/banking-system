@@ -9,9 +9,7 @@ public class TransactionUtil {
         // Option 3 - Deposit
         if (type.equalsIgnoreCase("Deposit")) {
             int denominationNum, numberOfBills;         
-            double currentDeposit = 0; 
-            double runningDeposit = 0;
-            char moreDeposits;         
+            double depositNum = 0;      
             boolean keepDepositing = true;
 
             while (keepDepositing) {
@@ -44,24 +42,16 @@ public class TransactionUtil {
                 String prompt = "Number of bills (up to 10 bills only): ";
                 numberOfBills = InputUtil.readIntInRange(scanner, prompt, 1, 10);
 
-                currentDeposit = denominationVal * numberOfBills;
-                runningDeposit += currentDeposit;
+                depositNum = denominationVal * numberOfBills;
 
-                System.out.printf("\nCurrent Deposit: P%.2f\n", currentDeposit);
-                System.out.printf("Running Deposit: P%.2f\n", runningDeposit);
-
-                System.out.printf("Do you wish to deposit more? (Y/N): ");
-                moreDeposits = scanner.next().toLowerCase().charAt(0);
-
-                if (moreDeposits != 'y') {
-                    keepDepositing = false; 
-                }
+                System.out.printf("\nDeposit Number: P%.2f\n", depositNum);
+                keepDepositing = false;
             }
 
             // After all deposits are finalized.
-            if (runningDeposit > 0) {
-                account.setBalance(account.getBalance() + runningDeposit);
-                amount = runningDeposit;
+            if (depositNum > 0) {
+                // account.setBalance(account.getBalance() + depositNum);
+                amount = depositNum;
                 validTransaction = true;
             }
 
@@ -77,7 +67,6 @@ public class TransactionUtil {
                 System.out.printf("Insufficient funds.\nYour current balance is P%.2f.\n\n", account.getBalance());
             }
             else {
-                account.setBalance(account.getBalance() - amount);
                 validTransaction = true;
             }
         }
@@ -121,10 +110,6 @@ public class TransactionUtil {
                     System.out.printf("Sorry, your balance is insufficient. Your current balance is P%.2f.\n", account.getBalance());
                 }
                 else {
-                    // Deduct from sender.
-                    account.setBalance(account.getBalance() - transferAmount);
-                    AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
-
                     // Add to recipient.
                     double newRecipientBalance = recipientAccount.getBalance() + transferAmount;
                     AccountManager.updateAccountInfo(recipientAccount.getAccNum(), newRecipientBalance, -1);

@@ -1,8 +1,5 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 public class Account {
     private int accNum;
@@ -63,29 +60,48 @@ public class Account {
         }
 
         incrementTransactionCount();
-        Transaction t = new Transaction(type, amount, amount);
+        Transaction t = new Transaction(type, amount, balance);
         transactionHistory.add(t);
     }
 
 
     // Displays Transaction History.
     public void printTransactionHistory() {
-        System.out.println("Transaction Type   Amount          Running Balance   Timestamp");
+        String fileName = "transaction-logs/" + accNum + ".txt";
+        System.out.println("\nTransaction Type   Amount          Running Balance   Timestamp");
 
-        for (int i = 0; i < transactionHistory.size(); i++) {
-            Transaction t = transactionHistory.get(i);
-            System.out.println(t.toDisplayString());
+        // Print Previous Transactions.
+        File file = new File(fileName);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }
+            catch (IOException error) {
+                System.out.println("Something went wrong " + error.getMessage());
+            }
+        }
+
+        // Print Current Transactions.
+        if (!transactionHistory.isEmpty()) {
+            for (Transaction t : transactionHistory) {
+                System.out.println(t.toDisplayString());
+            }
         }
     }
 
+    
     // Stores the Transaction History in a text file.
     public void saveTransactionHistoryToFile() {
         String fileName = "transaction-logs/" + accNum + ".txt";
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             for (Transaction t : transactionHistory) {
                 writer.write(t.toDisplayString() + "\n");
             }
+            transactionHistory.clear();
         }
         catch (IOException error) {
             System.out.println("Error saving new account: " + error.getMessage());

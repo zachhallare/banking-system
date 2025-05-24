@@ -35,8 +35,8 @@ public class Transaction {
         return (type.equalsIgnoreCase("Deposit") ? "+P" : "-P") + String.format("%.2f", amount);
     }
 
-    public String toDisplayString(int number) {
-        return String.format("%-15d %-18s %-15s %-17.2f %s",
-            number, type, getFormattedAmount(), resultingBalance, getTimestamp());
+    public String toDisplayString() {
+        return String.format("%-18s %-15s %-17.2f %s",
+            type, getFormattedAmount(), resultingBalance, getTimestamp());
     }
 }

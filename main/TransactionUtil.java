@@ -112,10 +112,6 @@ public class TransactionUtil {
                     System.out.printf("Sorry, your balance is insufficient. Your current balance is P%.2f.\n", account.getBalance());
                 }
                 else {
-                    // Deduct from sender.
-                    account.setBalance(account.getBalance() - transferAmount);
-                    AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
-
                     // Add to recipient.
                     double newRecipientBalance = recipientAccount.getBalance() + transferAmount;
                     AccountManager.updateAccountInfo(recipientAccount.getAccNum(), newRecipientBalance, -1);
@@ -124,6 +120,7 @@ public class TransactionUtil {
                     System.out.printf("%.2f has been transferred to %d.\n", transferAmount, accNumToTransferTo);
                     amount = transferAmount;
                     continueTransfering = false; 
+                    validTransaction = true;
                 }
             } while (continueTransfering);  
         }
@@ -133,6 +130,7 @@ public class TransactionUtil {
             account.addTransactions(type, amount);
             AccountManager.updateAccountInfo(account.getAccNum(), account.getBalance(), -1);
             System.out.printf("%s of P%.2f successful. New Balance: P%.2f\n", type, amount, account.getBalance());
+            account.saveTransactionHistoryToFile();
         }
     }
 

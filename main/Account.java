@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,27 +67,28 @@ public class Account {
         transactionHistory.add(t);
     }
 
-    // Encapsulation methods for simplified transactions.
-    public void deposit(double amount) {
-        addTransactions("Deposit", amount);
-    }
-
-    public void withdraw(double amount) {
-        addTransactions("Withdraw", amount);
-    }
-
-    public void transferFunds(double amount) {
-        addTransactions("Transfer Funds", amount);
-    }
 
     // Displays Transaction History.
     public void printTransactionHistory() {
-        System.out.println("Transaction #   Transaction Type   Amount           Running Balance   Timestamp");
+        System.out.println("Transaction Type   Amount          Running Balance   Timestamp");
 
-        int count = 1;
         for (int i = 0; i < transactionHistory.size(); i++) {
             Transaction t = transactionHistory.get(i);
-            System.out.println(t.toDisplayString(count++));
+            System.out.println(t.toDisplayString());
+        }
+    }
+
+    // Stores the Transaction History in a text file.
+    public void saveTransactionHistoryToFile() {
+        String fileName = "transaction-logs/" + accNum + ".txt";
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (Transaction t : transactionHistory) {
+                writer.write(t.toDisplayString() + "\n");
+            }
+        }
+        catch (IOException error) {
+            System.out.println("Error saving new account: " + error.getMessage());
         }
     }
 }

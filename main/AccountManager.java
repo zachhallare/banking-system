@@ -95,6 +95,7 @@ public class AccountManager {
             }
         } while (!isPinValid);
 
+        
         // Create and add new account to accounts-info.txt file.
         Account newAcc = new Account(accNum, pinNum, 0);
         accounts.add(newAcc);
@@ -109,5 +110,5 @@ public class AccountManager {
 
         System.out.println("Account successfully created! Please re-login.\n");
         return newAcc;
-    }
+    }    
 }

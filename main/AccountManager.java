@@ -61,6 +61,7 @@ public class AccountManager {
 
     // Creates new account for new users.
     public static Account createNewAccount(Scanner scanner, ArrayList<Account> accounts) {
+        ConsoleUtil.clearScreen(0);
         int accNum, pinNum;
         boolean isAccValid, isPinValid;
 
@@ -109,6 +110,7 @@ public class AccountManager {
         }
 
         System.out.println("Account successfully created! Please re-login.\n");
+        ConsoleUtil.clearScreen(2000);
         return newAcc;
     }    
 }

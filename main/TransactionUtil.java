@@ -3,6 +3,7 @@ import java.util.*;
 public class TransactionUtil {
     // Handles Deposits, Withdrawals, and Transfer of Funds.
     public static void processTransaction(Scanner scanner, Account account, String type) {
+        ConsoleUtil.clearScreen(0);
         double amount = 0;
         boolean validTransaction = false;
 
@@ -59,6 +60,7 @@ public class TransactionUtil {
 
         // Option 4 - Withdraw
         else if (type.equalsIgnoreCase("Withdraw")) {
+            ConsoleUtil.clearScreen(0);
             double withdrawAmount;
             withdrawAmount = InputUtil.readDouble(scanner, "Enter withdrawal amount:");
             if (withdrawAmount <= 0) {
@@ -75,6 +77,7 @@ public class TransactionUtil {
 
         // Option 5 - Transfer Funds
         else if (type.equalsIgnoreCase("Transfer Funds")){
+            ConsoleUtil.clearScreen(0);
             int accNumToTransferTo;      
             boolean continueTransfering = true;      
 

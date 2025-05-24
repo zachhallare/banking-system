@@ -47,11 +47,12 @@ public class Main {
 
     // Asks the user to login.
     public static Account initialLogIn(Scanner scanner, ArrayList<Account> accounts) {
+        ConsoleUtil.clearScreen(0);
         int enteredAccNum, enteredPinNum;
         int numOfLoginAttempts = 0;
 
         while (numOfLoginAttempts < 3) {
-            enteredAccNum = InputUtil.readIntInRange(scanner, "\nEnter Account Number:", 10000000, 99999999);
+            enteredAccNum = InputUtil.readIntInRange(scanner, "\nEnter Account Number: ", 10000000, 99999999);
             enteredPinNum = InputUtil.readIntInRange(scanner, "Enter PIN (Six Digits): ", 100000, 999999);
 
             for (int i = 0; i < accounts.size(); i++) {
@@ -73,6 +74,7 @@ public class Main {
 
     // Displays the Main Menu.
     public static Boolean displayMainMenu(Scanner scanner, Account account) {
+        ConsoleUtil.clearScreen(0);
         String[] options = {"Change PIN", "Balance Inquiry", "Deposit", "Withdraw", "Transfer Funds", "View Transactions", "Logout"};
         int enteredChoice = -1;
 
@@ -94,6 +96,7 @@ public class Main {
                 case 6 -> account.printTransactionHistory();
                 case 0 -> {
                     System.out.println("Logging out...\n");
+                    ConsoleUtil.clearScreen(1000);
                     return true;    // returns to first page.
                 }
                 default -> System.out.println("Invalid option.\n");
@@ -106,6 +109,7 @@ public class Main {
 
     // Option 1: Changes the user pin number.
     public static boolean changePin(Scanner scanner, Account account) {
+        ConsoleUtil.clearScreen(0);
         int oldPin, newPin, confirmPin;
         int numOfPinAttempts = 0;
 
@@ -132,6 +136,7 @@ public class Main {
                 account.setPinNum(newPin);     
                 AccountManager.updateAccountInfo(account.getAccNum(), -1, newPin);
                 System.out.println("PIN changed successfully. Please re-login.\n\n");
+                ConsoleUtil.clearScreen(2000);
                 return false;                 
             }
             else {
@@ -141,14 +146,17 @@ public class Main {
         }
 
         System.out.println("\nFailed to verify new PIN after three attempts.");
+        ConsoleUtil.clearScreen(2000);
         return true;   
     }
 
 
     // Option 2 - Balance Inquiry.
     public static void balanceInquiry(Account account) {
+        ConsoleUtil.clearScreen(0);
         System.out.printf("\nAccount Number: %d\n", account.getAccNum());   
-        System.out.printf("Your current balance is: P%.2f\n", account.getBalance());      
+        System.out.printf("Your current balance is: P%.2f\n", account.getBalance());    
+        ConsoleUtil.clearScreen(2000);  
     }
 }
 

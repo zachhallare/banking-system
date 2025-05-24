@@ -67,6 +67,7 @@ public class Account {
 
     // Displays Transaction History.
     public void printTransactionHistory() {
+        ConsoleUtil.clearScreen(0);
         String fileName = "transaction-logs/" + accNum + ".txt";
         System.out.println("\nTransaction Type   Amount          Running Balance   Timestamp");
 
@@ -90,6 +91,10 @@ public class Account {
                 System.out.println(t.toDisplayString());
             }
         }
+
+        int numTransactions = transactionHistory.size();
+        int delay = 1000 + (numTransactions * 500);
+        ConsoleUtil.clearScreen(delay);
     }
 
     
